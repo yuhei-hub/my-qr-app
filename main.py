@@ -4,40 +4,54 @@ from io import BytesIO
 
 # --- パスワードチェック機能 ---
 def check_password():
-    """パスワードが正しいか確認する関数"""
     if "password_correct" not in st.session_state:
-        # まだ入力していない状態
-        st.text_input("合言葉を入力してください", type="password", key="password_input")
+        st.text_input("パスワード", type="password", key="password_input")
         if st.button("ログイン"):
-            # Secretsに保存したパスワードと一致するかチェック
             if st.session_state["password_input"] == st.secrets["auth"]["password"]:
                 st.session_state["password_correct"] = True
-                st.rerun() # 画面を更新して中身を表示
+                st.rerun()
             else:
-                st.error("合言葉が違います！")
+                st.error("パスワードが違います！")
         return False
     else:
-        # すでに正解を入力済み
         return True
 
 # --- メインの処理 ---
 if check_password():
-    # パスワードが正しい時だけ、以下のQRコード作成機能が動く
-    st.title("オリジナルQRコード作成器（限定公開版）")
+    st.title("🎨 おしゃれQRコード作成器")
 
     url = st.text_input("QRコードにしたいURLを入力してね", "https://")
+    
+    # 【新機能】色を選べるようにする
+    col1, col2 = st.columns(2)
+    with col1:
+        fill_color = st.color_picker("QRコードの色", "#2E4053") # デフォルトはオシャレな紺色
+    with col2:
+        back_color = st.color_picker("背景の色", "#FFFFFF")    # デフォルトは白
 
     if st.button("作成する"):
-        qr = qrcode.make(url)
+        # 詳細な設定ができる QRCode クラスを使用
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(url)
+        qr.make(fit=True)
+
+        # ここで指定した色を反映！
+        img = qr.make_image(fill_color=fill_color, back_color=back_color)
+        
         buf = BytesIO()
-        qr.save(buf, format="PNG")
+        img.save(buf, format="PNG")
         byte_im = buf.getvalue()
         
-        st.image(byte_im, caption="完成したQRコード")
+        st.image(byte_im, caption="完成したオシャレなQRコード")
         
         st.download_button(
             label="画像をダウンロード",
             data=byte_im,
-            file_name="my_qr.png",
+            file_name="stylish_qr.png",
             mime="image/png"
         )
