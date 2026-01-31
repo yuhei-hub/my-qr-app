@@ -50,4 +50,14 @@ if check_password():
         img = qr.make_image(fill_color=colors["fg"], back_color=colors["bg"])
         
         buf = BytesIO()
-        img.save(buf, format="PNG
+        img.save(buf, format="PNG")
+        byte_im = buf.getvalue()
+        
+        st.image(byte_im, caption=f"選択済み：{selected_style}")
+        
+        st.download_button(
+            label="画像をダウンロード",
+            data=byte_im,
+            file_name="qr_code.png",
+            mime="image/png"
+        )
