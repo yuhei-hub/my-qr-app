@@ -13,7 +13,7 @@ def check_password():
                 st.session_state["password_correct"] = True
                 st.rerun()
             else:
-                st.error("パスワードが違います！")
+                st.error("合言葉が違います！")
         return False
     else:
         return True
@@ -24,14 +24,12 @@ if check_password():
 
     url = st.text_input("URLを入力", "https://")
     
-    # 1. 3つのスタイルを定義
     style_options = {
         "シック（紺×白）": {"fg": "#2E4053", "bg": "#FFFFFF"},
         "カフェ（茶×ベージュ）": {"fg": "#5D4037", "bg": "#FFF9C4"},
         "モダン（黒×薄灰）": {"fg": "#000000", "bg": "#F5F5F5"}
     }
     
-    # 2. セレクトボックスで選択
     selected_style = st.selectbox("デザインを選んでください", list(style_options.keys()))
     colors = style_options[selected_style]
 
@@ -40,10 +38,10 @@ if check_password():
         qr.add_data(url)
         qr.make(fit=True)
 
-        # 3. 「角を丸くする」設定で画像を作成
+        # ここが魔法の1行！
         img = qr.make_image(
             image_factory=StyledPilImage,
-            module_drawer=RoundedModuleDrawer(), # これでドットが丸くなる
+            module_drawer=RoundedModuleDrawer(),
             fill_color=colors["fg"],
             back_color=colors["bg"]
         )
