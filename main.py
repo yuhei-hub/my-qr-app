@@ -1,8 +1,8 @@
 import streamlit as st
 import qrcode
-from qrcode.image.styled_pil import StyledPilImage
-from qrcode.image.styles.moduledrawers import RoundedModuleDrawer
 from io import BytesIO
+# 複雑なインポートをやめ、基本機能だけでオシャレにする
+from qrcode.image.pure import PyPNGImageWrapper 
 
 # --- パスワードチェック機能 ---
 def check_password():
@@ -34,20 +34,21 @@ if check_password():
     colors = style_options[selected_style]
 
     if st.button("QRコードをデザインする"):
-        qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H)
+        # 設定をシンプルに変更
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=10,
+            border=4,
+        )
         qr.add_data(url)
         qr.make(fit=True)
 
-        # ここが魔法の1行！
-        img = qr.make_image(
-            image_factory=StyledPilImage,
-            module_drawer=RoundedModuleDrawer(),
-            fill_color=colors["fg"],
-            back_color=colors["bg"]
-        )
+        # エラーの出にくい標準的な方法で色を反映
+        img = qr.make_image(fill_color=colors["fg"], back_color=colors["bg"])
         
         buf = BytesIO()
-        img.save(buf, format="PNG")
+        img.save(buf)
         byte_im = buf.getvalue()
         
         st.image(byte_im, caption=f"{selected_style} スタイルで作成しました")
