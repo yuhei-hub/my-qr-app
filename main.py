@@ -5,37 +5,37 @@ from io import BytesIO
 # --- パスワードチェック機能 ---
 def check_password():
     if "password_correct" not in st.session_state:
-        st.text_input("パスワードを入力してね 🤫", type="password", key="password_input")
+        st.text_input("パスワードを入力してください", type="password", key="password_input")
         if st.button("ログイン"):
             if st.session_state["password_input"] == st.secrets["auth"]["password"]:
                 st.session_state["password_correct"] = True
                 st.rerun()
             else:
-                st.error("合言葉がちがうよ！")
+                st.error("パスワードが正しくありません")
         return False
     else:
         return True
 
 # --- メインの処理 ---
 if check_password():
-    st.title("🌈 遊び心満載！QR作成器")
-    st.write("標準機能だけでオシャレに。好きな雰囲気を選んでね。")
+    st.title("QRコード作成ツール")
+    st.write("URLを入力し、カラーを選択してQRコードを生成してください。")
 
-    url = st.text_input("QRコードにするURL", "https://")
+    url = st.text_input("対象のURL", "https://")
     
-    # 遊び心のある5つのテーマ
+    # 実用的でシンプルなカラーバリエーション
     style_options = {
-        "🌑 真夜中のネオン (Black & Lime)": {"fg": "#32CD32", "bg": "#000000"},
-        "🌸 桜もち (Pink & Green)": {"fg": "#FFB7C5", "bg": "#A5D6A7"},
-        "🌊 深海 (Deep Blue & Cyan)": {"fg": "#00FFFF", "bg": "#001F3F"},
-        "🍫 チョコミント (Brown & Mint)": {"fg": "#4E342E", "bg": "#B2DFDB"},
-        "🍊 ビタミンカラー (Orange & White)": {"fg": "#FF9800", "bg": "#FFFFFF"}
+        "スタンダード（黒 / 白）": {"fg": "#000000", "bg": "#FFFFFF"},
+        "ネイビー（紺 / 白）": {"fg": "#001F3F", "bg": "#FFFFFF"},
+        "ダークグレー（灰 / 白）": {"fg": "#333333", "bg": "#FFFFFF"},
+        "ブルー（青 / 薄青）": {"fg": "#007BFF", "bg": "#E7F3FF"},
+        "セピア（茶 / ベージュ）": {"fg": "#5D4037", "bg": "#F5F5DC"}
     }
     
-    selected_style = st.selectbox("どのテーマで作る？", list(style_options.keys()))
+    selected_style = st.selectbox("カラーを選択", list(style_options.keys()))
     colors = style_options[selected_style]
 
-    if st.button("このデザインで作成！"):
+    if st.button("QRコードを生成"):
         # 標準の安定した設定
         qr = qrcode.QRCode(
             version=1,
@@ -50,14 +50,4 @@ if check_password():
         img = qr.make_image(fill_color=colors["fg"], back_color=colors["bg"])
         
         buf = BytesIO()
-        img.save(buf, format="PNG")
-        byte_im = buf.getvalue()
-        
-        st.image(byte_im, caption=f"✨ {selected_style} スタイルが完成！")
-        
-        st.download_button(
-            label="この画像を保存する",
-            data=byte_im,
-            file_name="asobi_qr.png",
-            mime="image/png"
-        )
+        img.save(buf, format="PNG
