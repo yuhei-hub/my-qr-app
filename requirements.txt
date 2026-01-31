@@ -1,3 +1,4 @@
 streamlit
 qrcode[pil]
-pillow
+Pillow
+typing-extensions
